@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lolchat3l</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#eee;color:#222}
+button,input,textarea{font:inherit}
+#welcome{min-height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;background:#d6d6d6}
+.welcome-box{width:90%;max-width:700px;background:#fff;border:1px solid #aaa;padding:50px 30px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.logo{font-size:52px;font-weight:bold;margin-bottom:15px}
+.subtitle{color:#666;margin-bottom:35px}
+.age-title{font-size:20px;margin-bottom:20px}
+.age-buttons{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}
+.age-buttons button{border:1px solid #999;background:#f5f5f5;padding:15px 35px;cursor:pointer}
+.age-buttons button:hover{background:#ddd}
+#main{display:none}
+header{background:#222;color:#fff;padding:15px 25px;display:flex;justify-content:space-between;align-items:center;position:relative}
+.home-arrow{position:absolute;left:15px;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:4px 10px;line-height:1}
+.home-arrow:hover{color:#bbb}
+.header-logo{font-size:25px;font-weight:bold;margin-left:35px}
+.header-info{color:#bbb;font-size:13px}
+nav{background:#333;padding:10px;text-align:center}
+nav button{background:none;border:none;color:#fff;margin:0 15px;cursor:pointer}
+nav button:hover{text-decoration:underline}
+.container{width:95%;max-width:1200px;margin:25px auto}
+.age-warning{background:#fff;border:1px solid #bbb;padding:15px;margin-bottom:20px;font-size:13px}
+.categories{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.category{background:#fff;border:1px solid #aaa;padding:28px;min-height:150px;cursor:pointer}
+.category:hover{background:#f7f7f7}
+.category-title{font-weight:bold;font-size:20px;margin-bottom:10px}
+.category-description{font-size:14px;color:#666;line-height:1.5}
+#forum,#groups,#groupView,#adminPanel{display:none}
+.forum-header,.groups-header{background:#fff;border:1px solid #aaa;padding:20px;margin-bottom:15px}
+.forum-title{font-size:25px;font-weight:bold;margin-bottom:10px}
+.age-label{font-size:13px;color:#777;margin-top:6px}
+.opinion-buttons{margin-top:15px}
+.opinion-buttons button{padding:10px 18px;margin-right:8px;border:1px solid #999;background:#eee;cursor:pointer}
+.opinion-buttons button:hover{background:#ddd}
+.opinion-buttons button.active{background:#ccc;font-weight:bold}
+.new-post{background:#fff;border:1px solid #aaa;padding:15px;margin-bottom:15px}
+.new-post textarea{width:100%;height:90px;resize:vertical;padding:10px;border:1px solid #aaa}
+.file-row{margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.file-label{display:inline-block;padding:9px 14px;border:1px solid #888;background:#eee;cursor:pointer}
+.file-name{font-size:13px;color:#666}
+.hidden-file{display:none}
+.preview{margin-top:12px;max-width:100%;display:none}
+.preview img{max-width:100%;max-height:400px;border:1px solid #aaa}
+.preview video{max-width:100%;max-height:400px;border:1px solid #aaa}
+.new-post button.publish{margin-top:10px;padding:9px 18px;border:1px solid #888;background:#ddd;cursor:pointer}
+.thread{background:#fff;border:1px solid #bbb;margin-bottom:12px;padding:15px}
+.thread-header{font-size:12px;color:#777;margin-bottom:10px}
+.thread-message{font-size:15px;line-height:1.5;white-space:pre-wrap}
+.media-image{display:block;max-width:100%;max-height:500px;margin-top:12px;border:1px solid #aaa}
+.media-video{display:block;width:min(100%,700px);max-height:500px;margin-top:12px;border:1px solid #aaa;background:#000}
+.reply{margin-top:12px;margin-left:25px;background:#f1f1f1;border-left:3px solid #aaa;padding:10px}
+.reply-box{margin-top:12px;display:flex;gap:8px}
+.reply-box input{flex:1;padding:8px;border:1px solid #aaa}
+.reply-box button{padding:8px 12px;border:1px solid #999;background:#eee;cursor:pointer}
+.create-group-btn{margin-top:12px;padding:10px 20px;border:1px solid #888;background:#ddd;cursor:pointer;font-weight:bold}
+.create-group-btn:hover{background:#ccc}
+.create-group-form{margin-top:15px;padding:15px;border:1px solid #ccc;background:#f7f7f7}
+.create-group-form input[type="text"]{width:100%;padding:9px;border:1px solid #aaa;margin-bottom:10px}
+.create-group-form .form-actions{margin-top:10px;display:flex;gap:10px}
+.create-group-form .form-actions button:last-child{background:#eee;border:1px solid #999;padding:9px 18px;cursor:pointer}
+.group-avatar{border-radius:50%;object-fit:cover;display:block;flex-shrink:0}
+.group-avatar-fallback{background:#666;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0}
+.group-card-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.group-chat-header{display:flex;align-items:center;gap:15px;margin-bottom:10px}
+.groups-list{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.group{background:#fff;border:1px solid #aaa;padding:20px}
+.group-name{font-weight:bold}
+.group-members{font-size:12px;color:#777;margin-bottom:10px}
+.group-status{margin-top:10px}
+.group-tag{display:inline-block;font-size:12px;padding:4px 10px;border:1px solid #999;background:#eee}
+.owner-tag{background:#dfeee0;border-color:#8bb98d}
+.member-tag{background:#e2ecf7;border-color:#8fb3d9}
+.pending-tag{background:#f6ecd0;border-color:#c9ac5c}
+.join-btn{padding:8px 14px;border:1px solid #999;background:#eee;cursor:pointer}
+.join-btn:hover{background:#ddd}
+.group[data-clickable="true"]{cursor:pointer}
+.group[data-clickable="true"]:hover{background:#f7f7f7}
+.group-chat{background:#fff;border:1px solid #aaa;padding:20px}
+.group-chat h2{margin-bottom:8px}
+.group-chat p{color:#666;margin-bottom:15px}
+.owner-panel{background:#f7f7f7;border:1px solid #ccc;padding:15px;margin-bottom:15px;display:none}
+.owner-panel-title{font-weight:bold;margin-bottom:10px}
+.no-pending{font-size:13px;color:#777}
+.pending-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #ddd;font-size:13px}
+.pending-row span{flex:1}
+.accept-btn{padding:6px 12px;border:1px solid #8bb98d;background:#dfeee0;cursor:pointer}
+.accept-btn:hover{background:#c9e2ca}
+.reject-btn{padding:6px 12px;border:1px solid #c98b8b;background:#f3dede;cursor:pointer}
+.reject-btn:hover{background:#e9c4c4}
+.author-name{font-weight:bold;color:#333}
+.name-edit-link{background:none;border:none;color:#bbb;font-size:11px;text-decoration:underline;cursor:pointer;margin-left:8px;padding:0}
+.name-edit-link:hover{color:#fff}
+.name-edit-form{display:flex;align-items:center;gap:6px;margin-left:8px}
+.name-edit-form span{font-size:12px;color:#bbb}
+.name-edit-form input{width:70px;padding:3px 6px;font-size:12px}
+.name-edit-form button{padding:3px 8px;font-size:12px;border:1px solid #999;background:#eee;cursor:pointer}
+.claim-admin-link{display:none !important;background:none;border:none;color:#bbb;font-size:11px;text-decoration:underline;cursor:pointer;margin-left:8px;padding:0}
+.claim-admin-link:hover{color:#fff}
+.admin-badge{display:inline-block;font-size:10px;padding:2px 6px;background:#c9412e;color:#fff;border-radius:3px;margin-left:6px;font-weight:bold;vertical-align:middle}
+.owner-badge{display:inline-block;font-size:10px;padding:2px 6px;background:#2e6bc9;color:#fff;border-radius:3px;margin-left:6px;font-weight:bold;vertical-align:middle}
+.msg-admin-actions{margin-top:10px;display:flex;gap:8px}
+.msg-admin-actions button{font-size:12px;padding:5px 10px;border:1px solid #999;background:#eee;cursor:pointer}
+.msg-admin-actions .edit-msg-btn:hover{background:#ddd}
+.msg-admin-actions .delete-msg-btn{border-color:#c98b8b;background:#f3dede}
+.msg-admin-actions .delete-msg-btn:hover{background:#e9c4c4}
+.edit-msg-form{margin-top:10px}
+.edit-msg-form textarea{width:100%;height:70px;padding:8px;border:1px solid #aaa;resize:vertical}
+.edit-msg-form .form-actions{margin-top:6px;display:flex;gap:8px}
+.edit-msg-form .form-actions button{padding:6px 12px;border:1px solid #999;background:#eee;cursor:pointer}
+.banned-notice{background:#f3dede;border:1px solid #c98b8b;padding:12px;margin-bottom:15px;font-size:13px}
+.admin-panel-section{background:#fff;border:1px solid #aaa;padding:20px;margin-bottom:20px}
+.admin-panel-section h3{margin-bottom:12px;font-size:16px}
+.admin-user-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #ddd;font-size:13px}
+.admin-user-row:first-of-type{border-top:none}
+.admin-user-row .au-name{flex:1;font-weight:bold}
+.admin-user-row button{padding:6px 12px;border:1px solid #999;background:#eee;cursor:pointer;font-size:12px}
+/* Panel de administración flotante y movible */
+#adminPanel{position:fixed;z-index:9999;top:90px;left:50%;transform:translateX(-50%);width:min(760px,92vw);max-height:78vh;overflow:auto;background:#000;color:#fff;border:2px solid #333;box-shadow:0 12px 35px rgba(0,0,0,.55);padding:0}
+#adminPanel .admin-panel-section{background:#000;color:#fff;border-color:#333;margin:0;padding:18px}
+#adminPanel .admin-panel-section p{color:#bbb !important}
+#adminPanel .admin-panel-section h3{color:#fff}
+#adminPanel .admin-search{width:100%;padding:10px 12px;margin:0 0 12px;background:#111;color:#fff;border:1px solid #555;outline:none}
+#adminPanel .admin-search::placeholder{color:#888}
+#adminPanel .admin-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#111;border-bottom:1px solid #333;padding:12px 15px;cursor:move;user-select:none}
+#adminPanel .admin-panel-head h3{margin:0}
+#adminPanel .admin-close{padding:5px 10px;border:1px solid #555;background:#222;color:#fff;cursor:pointer}
+#adminPanel .admin-user-row{border-top-color:#333}
+#adminPanel .admin-user-row button{background:#222;color:#fff;border-color:#555}
+#adminPanel .admin-user-row .ban-btn{background:#3a1717;border-color:#9b5555}
+#adminPanel .admin-user-row .unban-btn{background:#173a1c;border-color:#5a9b63}
+#adminPanel .admin-user-row .promote-btn{background:#172b3a;border-color:#5685a8}
+#adminPanel .no-pending{color:#aaa}
+.admin-user-row .ban-btn{border-color:#c98b8b;background:#f3dede}
+.admin-user-row .ban-btn:hover{background:#e9c4c4}
+.admin-user-row .unban-btn{border-color:#8bb98d;background:#dfeee0}
+.admin-user-row .unban-btn:hover{background:#c9e2ca}
+.admin-user-row .promote-btn{border-color:#8fb3d9;background:#e2ecf7}
+.admin-user-row .promote-btn:hover{background:#c9dcef}
+.admin-nav-btn{background:#c9412e !important}
+footer{text-align:center;padding:30px;color:#777;font-size:12px}
+@media(max-width:700px){
+.categories{grid-template-columns:1fr}
+.groups-list{grid-template-columns:1fr}
+.logo{font-size:38px}
+header{flex-direction:column;gap:8px}
+.reply{margin-left:8px}
+}
+</style>
+</head>
+<body>
+
+<section id="welcome">
+<div class="welcome-box">
+<div class="logo">lolchat3l</div>
+<div class="subtitle">Foro anónimo de conversación</div>
+<div class="age-title">Selecciona tu rango de edad</div>
+<div class="age-buttons">
+<button onclick="selectAge('18+')">18+</button>
+<button onclick="selectAge('20+')">20+</button>
+</div>
+</div>
+</section>
+
+<section id="main">
+<header>
+<button class="home-arrow" onclick="showHome()" title="Volver al inicio">&#8592;</button>
+<div class="header-logo">lolchat3l</div>
+<div class="header-info">
+Usuario: <span id="headerDisplayName">Anónimo</span><span id="headerRoleBadge"></span>
+· <span id="headerAge"></span>
+<button class="name-edit-link" id="nameEditLink" onclick="toggleNameEditForm()">editar nombre</button>
+<span class="name-edit-form" id="nameEditForm" style="display:none"></span>
+<button class="claim-admin-link" id="claimAdminLink" onclick="claimSiteOwner()" style="display:none">configurar como administrador del sitio</button>
+</div>
+</header>
+
+<nav>
+<button onclick="showHome()">Inicio</button>
+<button onclick="showGroups()">Grupos</button>
+<button id="adminNavBtn" class="admin-nav-btn" onclick="showAdminPanel()" style="display:none">Panel Admin</button>
+</nav>
+
+<div class="container">
+<div class="age-warning">
+Estás navegando como <b>Anónimo</b>. Tu zona de edad es <b id="currentAge"></b>.
+Solo podrás ver publicaciones y grupos de tu mismo rango de edad.
+</div>
+
+<section id="home">
+<div class="categories">
+<div class="category" onclick="openForum('Videojuegos y Programación')">
+<div class="category-title">Videojuegos y Programación</div>
+<div class="category-description">Videojuegos, programación, tecnología y desarrollo.</div>
+</div>
+<div class="category" onclick="openForum('Memes y Cultura Popular')">
+<div class="category-title">Memes y Cultura Popular</div>
+<div class="category-description">Memes, tendencias, Internet y cultura popular.</div>
+</div>
+<div class="category" onclick="openForum('Anime y Dibujos')">
+<div class="category-title">Anime y Dibujos</div>
+<div class="category-description">Anime, manga, dibujos, fanarts y personajes.</div>
+</div>
+<div class="category" onclick="openForum('Noticias y Polémicas de Internet')">
+<div class="category-title">Noticias y Polémicas de Internet</div>
+<div class="category-description">Noticias, debates y polémicas de Internet.</div>
+</div>
+</div>
+</section>
+
+<section id="forum">
+<div class="forum-header">
+<div id="forumTitle" class="forum-title"></div>
+<div class="age-label">Zona exclusiva para <b id="forumAge"></b></div>
+<div style="margin-top:10px">Selecciona una sala:</div>
+<div class="opinion-buttons">
+<button id="positiveBtn" onclick="changeOpinion('positivo')">/positivo/</button>
+<button id="negativeBtn" onclick="changeOpinion('negativo')">/negativo/</button>
+<button id="discussionBtn" onclick="changeOpinion('discusion')">/discusion/</button>
+</div>
+</div>
+
+<div class="new-post">
+<textarea id="postText" placeholder="Escribe una publicación como Anónimo..."></textarea>
+
+<div class="file-row">
+<label class="file-label" for="mediaFile">Añadir imagen o video</label>
+<input class="hidden-file" id="mediaFile" type="file" accept="image/*,video/*" onchange="previewMedia()">
+<span class="file-name" id="fileName">Ningún archivo seleccionado</span>
+</div>
+
+<div class="preview" id="mediaPreview"></div>
+
+<button class="publish" onclick="createPost()">Publicar</button>
+</div>
+
+<div id="threads"></div>
+</section>
+
+<section id="groups">
+<div class="groups-header">
+<h2>Grupos</h2>
+<p>Crea tu propio grupo o solicita unirte a uno creado por otro anónimo. El dueño del grupo debe aceptar tu solicitud antes de que puedas entrar.</p>
+<button class="create-group-btn" onclick="toggleCreateGroupForm()">+ Crear grupo</button>
+
+<div class="create-group-form" id="createGroupForm" style="display:none">
+<input type="text" id="newGroupName" placeholder="Nombre del grupo">
+<div class="file-row">
+<label class="file-label" for="newGroupImage">Imagen de perfil (opcional)</label>
+<input class="hidden-file" id="newGroupImage" type="file" accept="image/*" onchange="previewNewGroupImage()">
+<span class="file-name" id="newGroupImageName">Ningún archivo seleccionado</span>
+</div>
+<div class="preview" id="newGroupImagePreview"></div>
+<div class="form-actions">
+<button class="publish" onclick="submitCreateGroup()">Crear grupo</button>
+<button onclick="toggleCreateGroupForm()">Cancelar</button>
+</div>
+</div>
+</div>
+
+<div class="groups-list" id="groupsList"></div>
+</section>
+
+<section id="groupView">
+<div class="group-chat">
+<div class="group-chat-header">
+<div id="groupAvatarContainer"></div>
+<div>
+<h2 id="groupTitle"></h2>
+<p>Grupo exclusivo para <b id="groupAge"></b>.</p>
+</div>
+</div>
+<div class="owner-panel" id="ownerPanel"></div>
+<div class="new-post">
+<textarea id="groupPostText" placeholder="Escribe en el grupo como Anónimo..."></textarea>
+<div class="file-row">
+<label class="file-label" for="groupMediaFile">Añadir imagen o video</label>
+<input class="hidden-file" id="groupMediaFile" type="file" accept="image/*,video/*" onchange="previewGroupMedia()">
+<span class="file-name" id="groupFileName">Ningún archivo seleccionado</span>
+</div>
+<div class="preview" id="groupMediaPreview"></div>
+<button class="publish" onclick="createGroupPost()">Publicar en el grupo</button>
+</div>
+<div id="groupThreads"></div>
+</div>
+</section>
+
+<section id="adminPanel">
+<div class="admin-panel-head" id="adminPanelDragHandle">
+<h3>Panel de administración</h3>
+<button class="admin-close" onclick="closeAdminPanel()">Cerrar</button>
+</div>
+<div class="admin-panel-section">
+<p style="font-size:13px;color:#bbb;margin-bottom:12px">Busca un usuario anónimo por su nombre y usa los botones para banearlo, editar sus mensajes o darle/quitarle el rol de administrador.</p>
+<input class="admin-search" id="adminUserSearch" type="text" placeholder="Escribe el nombre del anónimo..." oninput="renderAdminUsersList()">
+<div id="adminUsersList"></div>
+</div>
+</section>
+</div>
+
+<footer>lolchat3l — Foro anónimo</footer>
+</section>
+
+<script>
+let selectedAge=null,currentForum="",currentOpinion="discusion",currentGroup="";
+activateOwnerIfRequested();
+
+function selectAge(age){
+selectedAge=age;
+document.getElementById("welcome").style.display="none";
+document.getElementById("main").style.display="block";
+document.getElementById("currentAge").textContent=age;
+document.getElementById("forumAge").textContent=age;
+document.getElementById("headerAge").textContent=age;
+document.querySelectorAll(".group-age").forEach(el=>el.textContent=age);
+refreshIdentityUI();
+showHome();
+}
+
+function showHome(){
+document.getElementById("home").style.display="block";
+document.getElementById("forum").style.display="none";
+document.getElementById("groups").style.display="none";
+document.getElementById("groupView").style.display="none";
+document.getElementById("adminPanel").style.display="none";
+}
+
+function showGroups(){
+document.getElementById("home").style.display="none";
+document.getElementById("forum").style.display="none";
+document.getElementById("groups").style.display="block";
+document.getElementById("groupView").style.display="none";
+document.getElementById("adminPanel").style.display="none";
+renderGroupsList();
+}
+
+function openForum(name){
+currentForum=name;
+document.getElementById("home").style.display="none";
+document.getElementById("groups").style.display="none";
+document.getElementById("groupView").style.display="none";
+document.getElementById("adminPanel").style.display="none";
+document.getElementById("forum").style.display="block";
+document.getElementById("forumTitle").textContent=name;
+document.getElementById("forumAge").textContent=selectedAge;
+changeOpinion(currentOpinion);
+}
+
+function changeOpinion(opinion){
+currentOpinion=opinion;
+document.querySelectorAll(".opinion-buttons button").forEach(b=>b.classList.remove("active"));
+if(opinion==="positivo")document.getElementById("positiveBtn").classList.add("active");
+if(opinion==="negativo")document.getElementById("negativeBtn").classList.add("active");
+if(opinion==="discusion")document.getElementById("discussionBtn").classList.add("active");
+loadPosts();
+}
+
+function getPosts(){
+return JSON.parse(localStorage.getItem("lolchat3l_posts")||"[]");
+}
+
+function savePosts(posts){
+localStorage.setItem("lolchat3l_posts",JSON.stringify(posts));
+}
+
+function fileToDataURL(file){
+return new Promise((resolve,reject)=>{
+const reader=new FileReader();
+reader.onload=()=>resolve(reader.result);
+reader.onerror=reject;
+reader.readAsDataURL(file);
+});
+}
+
+async function createPost(){
+if(isBanned(getMyId())){
+alert("Has sido baneado y no puedes publicar.");
+return;
+}
+
+const text=document.getElementById("postText").value.trim();
+const file=document.getElementById("mediaFile").files[0];
+
+if(!text && !file){
+alert("Escribe algo o selecciona una imagen/video.");
+return;
+}
+
+if(file && file.size>20*1024*1024){
+alert("El archivo es demasiado grande. Usa archivos de hasta 20 MB.");
+return;
+}
+
+let media=null;
+
+if(file){
+media={
+type:file.type.startsWith("image/")?"image":"video",
+mime:file.type,
+name:file.name,
+data:await fileToDataURL(file)
+};
+}
+
+const posts=getPosts();
+posts.unshift({
+forum:currentForum,
+opinion:currentOpinion,
+age:selectedAge,
+authorId:getMyId(),
+authorName:getMyDisplayName(),
+text:text,
+media:media,
+date:new Date().toLocaleString(),
+replies:[]
+});
+savePosts(posts);
+
+document.getElementById("postText").value="";
+document.getElementById("mediaFile").value="";
+document.getElementById("fileName").textContent="Ningún archivo seleccionado";
+document.getElementById("mediaPreview").innerHTML="";
+document.getElementById("mediaPreview").style.display="none";
+
+loadPosts();
+}
+
+function loadPosts(){
+const container=document.getElementById("threads");
+container.innerHTML="";
+const myId=getMyId();
+const amAdmin=isAdmin(myId);
+const posts=getPosts().filter(post=>
+post.age===selectedAge &&
+post.forum===currentForum &&
+post.opinion===currentOpinion
+);
+
+if(!posts.length){
+container.innerHTML='<div class="thread">Todavía no hay publicaciones en <b>/'+escapeHTML(currentOpinion)+'/</b> para '+escapeHTML(selectedAge)+'. Sé el primero en publicar.</div>';
+return;
+}
+
+posts.forEach((post,index)=>{
+const thread=document.createElement("div");
+thread.className="thread";
+let repliesHTML="";
+
+(post.replies||[]).forEach((reply,rIndex)=>{
+const replyName=reply.authorName||anonTag(reply.authorId);
+repliesHTML+='<div class="reply"><div class="thread-header"><span class="author-name">'+escapeHTML(replyName)+(reply.authorId===myId?' (tú)':'')+'</span> — '+escapeHTML(reply.date)+'</div><div>'+escapeHTML(reply.text)+'</div>'+
+(amAdmin?'<div class="msg-admin-actions"><button class="edit-msg-btn" onclick="startEditReply('+index+','+rIndex+')">Editar</button><button class="delete-msg-btn" onclick="deleteReply('+index+','+rIndex+')">Eliminar</button></div><div class="edit-msg-form" id="editReplyForm-'+index+'-'+rIndex+'" style="display:none"></div>':'')+
+'</div>';
+});
+
+let mediaHTML="";
+if(post.media){
+if(post.media.type==="image"){
+mediaHTML='<img class="media-image" src="'+post.media.data+'" alt="'+escapeHTML(post.media.name||"Imagen")+'">';
+}else{
+mediaHTML='<video class="media-video" controls src="'+post.media.data+'"></video>';
+}
+}
+
+const authorName=post.authorName||anonTag(post.authorId);
+
+thread.innerHTML=
+'<div class="thread-header"><span class="author-name">'+escapeHTML(authorName)+(post.authorId===myId?' (tú)':'')+'</span> — '+escapeHTML(post.date)+' — /'+escapeHTML(post.opinion)+'/ — '+escapeHTML(post.age)+'</div>'+
+'<div class="thread-message" id="postText-'+index+'">'+(post.text?escapeHTML(post.text):'')+'</div>'+
+mediaHTML+
+(amAdmin?'<div class="msg-admin-actions"><button class="edit-msg-btn" onclick="startEditPost('+index+')">Editar</button><button class="delete-msg-btn" onclick="deletePost('+index+')">Eliminar</button></div><div class="edit-msg-form" id="editPostForm-'+index+'" style="display:none"></div>':'')+
+repliesHTML+
+'<div class="reply-box"><input id="reply-'+index+'" placeholder="Responder como Anónimo..."><button onclick="replyPost('+index+')">Responder</button></div>';
+
+container.appendChild(thread);
+});
+}
+
+function getFilteredPostIndexes(){
+const posts=getPosts();
+const filteredIndexes=[];
+posts.forEach((post,i)=>{
+if(post.age===selectedAge&&post.forum===currentForum&&post.opinion===currentOpinion)filteredIndexes.push(i);
+});
+return filteredIndexes;
+}
+
+function startEditPost(index){
+if(!isAdmin(getMyId()))return;
+const form=document.getElementById("editPostForm-"+index);
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+const currentText=posts[realIndex].text||"";
+form.innerHTML='<textarea id="editPostText-'+index+'"></textarea><div class="form-actions"><button onclick="saveEditPost('+index+')">Guardar</button><button onclick="document.getElementById(\'editPostForm-'+index+'\').style.display=\'none\'">Cancelar</button></div>';
+document.getElementById("editPostText-"+index).value=currentText;
+form.style.display="block";
+}
+
+function saveEditPost(index){
+if(!isAdmin(getMyId()))return;
+const newText=document.getElementById("editPostText-"+index).value;
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+posts[realIndex].text=newText;
+posts[realIndex].editedByAdmin=true;
+savePosts(posts);
+loadPosts();
+}
+
+function deletePost(index){
+if(!isAdmin(getMyId()))return;
+if(!confirm("¿Eliminar esta publicación?"))return;
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+posts.splice(realIndex,1);
+savePosts(posts);
+loadPosts();
+}
+
+function startEditReply(index,rIndex){
+if(!isAdmin(getMyId()))return;
+const form=document.getElementById("editReplyForm-"+index+"-"+rIndex);
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+const currentText=posts[realIndex].replies[rIndex].text||"";
+form.innerHTML='<textarea id="editReplyText-'+index+'-'+rIndex+'"></textarea><div class="form-actions"><button onclick="saveEditReply('+index+','+rIndex+')">Guardar</button><button onclick="document.getElementById(\'editReplyForm-'+index+'-'+rIndex+'\').style.display=\'none\'">Cancelar</button></div>';
+document.getElementById("editReplyText-"+index+"-"+rIndex).value=currentText;
+form.style.display="block";
+}
+
+function saveEditReply(index,rIndex){
+if(!isAdmin(getMyId()))return;
+const newText=document.getElementById("editReplyText-"+index+"-"+rIndex).value;
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+posts[realIndex].replies[rIndex].text=newText;
+posts[realIndex].replies[rIndex].editedByAdmin=true;
+savePosts(posts);
+loadPosts();
+}
+
+function deleteReply(index,rIndex){
+if(!isAdmin(getMyId()))return;
+if(!confirm("¿Eliminar esta respuesta?"))return;
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+posts[realIndex].replies.splice(rIndex,1);
+savePosts(posts);
+loadPosts();
+}
+
+function replyPost(index){
+if(isBanned(getMyId())){
+alert("Has sido baneado y no puedes responder.");
+return;
+}
+
+const input=document.getElementById("reply-"+index);
+const text=input.value.trim();
+if(!text)return;
+
+const posts=getPosts();
+const realIndex=getFilteredPostIndexes()[index];
+if(realIndex===undefined)return;
+
+if(!posts[realIndex].replies)posts[realIndex].replies=[];
+posts[realIndex].replies.push({text:text,date:new Date().toLocaleString(),authorId:getMyId(),authorName:getMyDisplayName()});
+savePosts(posts);
+loadPosts();
+}
+
+function previewMedia(){
+const file=document.getElementById("mediaFile").files[0];
+const preview=document.getElementById("mediaPreview");
+document.getElementById("fileName").textContent=file?file.name:"Ningún archivo seleccionado";
+preview.innerHTML="";
+if(!file){preview.style.display="none";return;}
+
+const url=URL.createObjectURL(file);
+if(file.type.startsWith("image/")){
+const img=document.createElement("img");
+img.src=url;
+preview.appendChild(img);
+}else if(file.type.startsWith("video/")){
+const video=document.createElement("video");
+video.src=url;
+video.controls=true;
+preview.appendChild(video);
+}
+preview.style.display="block";
+}
+
+function getMyId(){
+let id=localStorage.getItem("lolchat3l_myid");
+if(!id){
+id="anon-"+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+localStorage.setItem("lolchat3l_myid",id);
+}
+return id;
+}
+
+/* ---------- Nombres de usuario ---------- */
+
+function defaultNumericSuffix(id){
+let hash=0;
+for(let i=0;i<id.length;i++){
+hash=(hash*31+id.charCodeAt(i))>>>0;
+}
+return String(hash%10000).padStart(4,"0");
+}
+
+function getMySuffix(){
+return localStorage.getItem("lolchat3l_mysuffix")||defaultNumericSuffix(getMyId());
+}
+
+function getMyFullName(){
+return localStorage.getItem("lolchat3l_myfullname")||"";
+}
+
+function getMyDisplayName(){
+if(isAdmin(getMyId())){
+const fullName=getMyFullName();
+if(fullName)return fullName;
+}
+return "Anónimo"+getMySuffix();
+}
+
+function toggleNameEditForm(){
+const form=document.getElementById("nameEditForm");
+const isHidden=form.style.display==="none"||!form.style.display;
+
+if(isHidden){
+renderNameEditForm();
+form.style.display="inline-flex";
+}else{
+form.style.display="none";
+}
+}
+
+function renderNameEditForm(){
+const form=document.getElementById("nameEditForm");
+const myId=getMyId();
+
+if(isAdmin(myId)){
+form.innerHTML='<input type="text" id="nameFullInput" placeholder="Tu nombre" maxlength="24"><button onclick="saveFullName()">Guardar</button>';
+document.getElementById("nameFullInput").value=getMyFullName()||getMyDisplayName();
+}else{
+form.innerHTML='<span>Anónimo</span><input type="text" id="nameSuffixInput" placeholder="1234" maxlength="8" inputmode="numeric"><button onclick="saveNameSuffix()">Guardar</button>';
+document.getElementById("nameSuffixInput").value=getMySuffix();
+}
+}
+
+function saveFullName(){
+const input=document.getElementById("nameFullInput");
+const name=input.value.trim();
+if(!name){
+alert("Escribe un nombre.");
+return;
+}
+localStorage.setItem("lolchat3l_myfullname",name);
+document.getElementById("nameEditForm").style.display="none";
+refreshIdentityUI();
+}
+
+function saveNameSuffix(){
+const input=document.getElementById("nameSuffixInput");
+const digitsOnly=input.value.replace(/[^0-9]/g,"");
+if(!digitsOnly){
+alert("Solo puedes añadir números después de 'Anónimo'. La palabra Anónimo no se puede quitar.");
+return;
+}
+localStorage.setItem("lolchat3l_mysuffix",digitsOnly);
+document.getElementById("nameEditForm").style.display="none";
+refreshIdentityUI();
+}
+
+/* ---------- Roles: dueño, administradores, baneados ---------- */
+
+/* Sin backend no existe una forma criptográficamente segura de identificar al dueño.
+   Este archivo usa una activación local del navegador: abre tu página una vez con #owner-lolchat3l.
+   Los demás visitantes, sin ese fragmento, entran como usuarios normales. */
+const OWNER_ACTIVATION_HASH="#owner-lolchat3l";
+
+function getOwnerId(){
+return localStorage.getItem("lolchat3l_owner")||null;
+}
+
+function activateOwnerIfRequested(){
+if(location.hash===OWNER_ACTIVATION_HASH&&!getOwnerId()){
+localStorage.setItem("lolchat3l_owner",getMyId());
+try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+}
+}
+
+function getAdmins(){
+return JSON.parse(localStorage.getItem("lolchat3l_admins")||"[]");
+}
+
+function saveAdmins(admins){
+localStorage.setItem("lolchat3l_admins",JSON.stringify(admins));
+}
+
+function getBanned(){
+return JSON.parse(localStorage.getItem("lolchat3l_banned")||"[]");
+}
+
+function saveBanned(banned){
+localStorage.setItem("lolchat3l_banned",JSON.stringify(banned));
+}
+
+function isOwner(id){
+return getOwnerId()===id;
+}
+
+function isAdmin(id){
+return isOwner(id)||getAdmins().includes(id);
+}
+
+function isBanned(id){
+return getBanned().includes(id);
+}
+
+function claimSiteOwner(){
+alert("El dueño se activa solo desde el enlace especial del propietario.");
+}
+
+
+function banUser(userId){
+if(isOwner(userId)){
+alert("No puedes banear al dueño del sitio.");
+return;
+}
+if(isAdmin(userId)&&!isOwner(getMyId())){
+alert("Solo el dueño del sitio puede banear a otro administrador.");
+return;
+}
+const banned=getBanned();
+if(!banned.includes(userId))banned.push(userId);
+saveBanned(banned);
+renderAdminUsersList();
+}
+
+function unbanUser(userId){
+saveBanned(getBanned().filter(id=>id!==userId));
+renderAdminUsersList();
+}
+
+function promoteToAdmin(userId){
+if(!isOwner(getMyId())){
+alert("Solo el dueño del sitio puede nombrar administradores.");
+return;
+}
+const admins=getAdmins();
+if(!admins.includes(userId))admins.push(userId);
+saveAdmins(admins);
+renderAdminUsersList();
+}
+
+function demoteAdmin(userId){
+if(!isOwner(getMyId())){
+alert("Solo el dueño del sitio puede quitar administradores.");
+return;
+}
+saveAdmins(getAdmins().filter(id=>id!==userId));
+renderAdminUsersList();
+}
+
+function refreshIdentityUI(){
+const myId=getMyId();
+document.getElementById("headerDisplayName").textContent=getMyDisplayName();
+
+const badge=document.getElementById("headerRoleBadge");
+if(isOwner(myId)){
+badge.innerHTML='<span class="owner-badge">DUEÑO</span>';
+}else if(isAdmin(myId)){
+badge.innerHTML='<span class="admin-badge">ADMIN</span>';
+}else{
+badge.innerHTML="";
+}
+
+document.getElementById("claimAdminLink").style.display="none";
+document.getElementById("adminNavBtn").style.display=isAdmin(myId)?"inline-block":"none";
+}
+
+function collectKnownUsers(){
+const users={};
+function record(id,name){
+if(!id)return;
+if(!users[id]||name)users[id]={id:id,name:name||(users[id]?users[id].name:anonTag(id))};
+}
+getPosts().forEach(post=>{
+record(post.authorId,post.authorName);
+(post.replies||[]).forEach(reply=>record(reply.authorId,reply.authorName));
+});
+getGroupPosts().forEach(post=>record(post.authorId,post.authorName));
+record(getMyId(),getMyDisplayName());
+return Object.values(users);
+}
+
+function showAdminPanel(){
+if(!isAdmin(getMyId())){
+alert("No tienes permisos de administrador.");
+return;
+}
+document.getElementById("home").style.display="none";
+document.getElementById("forum").style.display="none";
+document.getElementById("groups").style.display="none";
+document.getElementById("groupView").style.display="none";
+document.getElementById("adminPanel").style.display="block";
+renderAdminUsersList();
+makeAdminPanelDraggable();
+}
+
+function closeAdminPanel(){
+document.getElementById("adminPanel").style.display="none";
+}
+
+function makeAdminPanelDraggable(){
+const panel=document.getElementById("adminPanel");
+const handle=document.getElementById("adminPanelDragHandle");
+if(!panel||!handle||handle.dataset.ready)return;
+handle.dataset.ready="1";
+let dragging=false,startX=0,startY=0,startLeft=0,startTop=0;
+const start=(e)=>{
+if(e.target.closest("button"))return;
+const pt=e.touches?e.touches[0]:e;
+const rect=panel.getBoundingClientRect();
+if(!panel.style.left||panel.style.left==="50%")panel.style.left=rect.left+"px";
+panel.style.top=rect.top+"px";
+panel.style.transform="none";
+startX=pt.clientX;startY=pt.clientY;startLeft=rect.left;startTop=rect.top;dragging=true;
+};
+const move=(e)=>{if(!dragging)return;const pt=e.touches?e.touches[0]:e;panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,startLeft+pt.clientX-startX))+"px";panel.style.top=Math.max(0,Math.min(window.innerHeight-60,startTop+pt.clientY-startY))+"px";e.preventDefault();};
+const stop=()=>dragging=false;
+handle.addEventListener("mousedown",start);document.addEventListener("mousemove",move);document.addEventListener("mouseup",stop);
+handle.addEventListener("touchstart",start,{passive:false});document.addEventListener("touchmove",move,{passive:false});document.addEventListener("touchend",stop);
+}
+
+function renderAdminUsersList(){
+const container=document.getElementById("adminUsersList");
+container.innerHTML="";
+const myId=getMyId();
+const search=(document.getElementById("adminUserSearch")?.value||"").trim().toLowerCase();
+const users=collectKnownUsers().filter(user=>!search||String(user.name||"").toLowerCase().includes(search)||String(user.id||"").toLowerCase().includes(search));
+
+if(!users.length){
+container.innerHTML='<div class="no-pending">Todavía no hay usuarios registrados.</div>';
+return;
+}
+
+users.forEach(user=>{
+const row=document.createElement("div");
+row.className="admin-user-row";
+
+const nameEl=document.createElement("div");
+nameEl.className="au-name";
+nameEl.textContent=user.name+(user.id===myId?" (tú)":"");
+if(isOwner(user.id))nameEl.innerHTML+=' <span class="owner-badge">DUEÑO</span>';
+else if(isAdmin(user.id))nameEl.innerHTML+=' <span class="admin-badge">ADMIN</span>';
+row.appendChild(nameEl);
+
+if(user.id!==myId&&!isOwner(user.id)){
+if(isBanned(user.id)){
+const unbanBtn=document.createElement("button");
+unbanBtn.className="unban-btn";
+unbanBtn.textContent="Desbanear";
+unbanBtn.addEventListener("click",()=>unbanUser(user.id));
+row.appendChild(unbanBtn);
+}else{
+const banBtn=document.createElement("button");
+banBtn.className="ban-btn";
+banBtn.textContent="Banear";
+banBtn.addEventListener("click",()=>banUser(user.id));
+row.appendChild(banBtn);
+}
+}
+
+if(isOwner(myId)&&user.id!==myId){
+if(isAdmin(user.id)){
+const demoteBtn=document.createElement("button");
+demoteBtn.className="promote-btn";
+demoteBtn.textContent="Quitar admin";
+demoteBtn.addEventListener("click",()=>demoteAdmin(user.id));
+row.appendChild(demoteBtn);
+}else{
+const promoteBtn=document.createElement("button");
+promoteBtn.className="promote-btn";
+promoteBtn.textContent="Hacer admin";
+promoteBtn.addEventListener("click",()=>promoteToAdmin(user.id));
+row.appendChild(promoteBtn);
+}
+}
+
+container.appendChild(row);
+});
+}
+
+function getGroups(){
+return JSON.parse(localStorage.getItem("lolchat3l_groups")||"[]");
+}
+
+function saveGroups(groups){
+localStorage.setItem("lolchat3l_groups",JSON.stringify(groups));
+}
+
+function toggleCreateGroupForm(){
+const form=document.getElementById("createGroupForm");
+form.style.display=(form.style.display==="none"||!form.style.display)?"block":"none";
+}
+
+function previewNewGroupImage(){
+const file=document.getElementById("newGroupImage").files[0];
+const preview=document.getElementById("newGroupImagePreview");
+document.getElementById("newGroupImageName").textContent=file?file.name:"Ningún archivo seleccionado";
+preview.innerHTML="";
+if(!file){preview.style.display="none";return;}
+
+const url=URL.createObjectURL(file);
+const img=document.createElement("img");
+img.src=url;
+preview.appendChild(img);
+preview.style.display="block";
+}
+
+async function submitCreateGroup(){
+const nameInput=document.getElementById("newGroupName");
+const name=nameInput.value.trim();
+if(!name){
+alert("Escribe un nombre para el grupo.");
+return;
+}
+
+const file=document.getElementById("newGroupImage").files[0];
+let image=null;
+
+if(file){
+if(file.size>5*1024*1024){
+alert("La imagen es demasiado grande. Usa una de hasta 5 MB.");
+return;
+}
+image=await fileToDataURL(file);
+}
+
+const groups=getGroups();
+const myId=getMyId();
+const group={
+id:"g-"+Date.now().toString(36)+Math.random().toString(36).slice(2,8),
+name:name,
+age:selectedAge,
+image:image,
+ownerId:myId,
+members:[myId],
+pending:[],
+createdAt:Date.now()
+};
+groups.unshift(group);
+saveGroups(groups);
+
+nameInput.value="";
+document.getElementById("newGroupImage").value="";
+document.getElementById("newGroupImageName").textContent="Ningún archivo seleccionado";
+document.getElementById("newGroupImagePreview").innerHTML="";
+document.getElementById("newGroupImagePreview").style.display="none";
+document.getElementById("createGroupForm").style.display="none";
+
+openGroup(group.id);
+}
+
+function groupAvatarHTML(group,size){
+if(group.image){
+return '<img class="group-avatar" src="'+group.image+'" style="width:'+size+'px;height:'+size+'px" alt="'+escapeHTML(group.name)+'">';
+}
+const letter=escapeHTML((group.name.trim().charAt(0)||"?").toUpperCase());
+const fontSize=Math.round(size*0.45);
+return '<div class="group-avatar-fallback" style="width:'+size+'px;height:'+size+'px;border-radius:50%;font-size:'+fontSize+'px">'+letter+'</div>';
+}
+
+function anonTag(id){
+if(!id)return"Anónimo";
+const clean=id.replace("anon-","");
+return "Anónimo #"+clean.slice(0,4).toUpperCase();
+}
+
+function requestJoin(groupId){
+const groups=getGroups();
+const group=groups.find(g=>g.id===groupId);
+if(!group)return;
+const myId=getMyId();
+if(group.members.includes(myId)||group.pending.includes(myId))return;
+group.pending.push(myId);
+saveGroups(groups);
+renderGroupsList();
+}
+
+function acceptRequest(groupId,userId){
+const groups=getGroups();
+const group=groups.find(g=>g.id===groupId);
+if(!group)return;
+group.pending=group.pending.filter(id=>id!==userId);
+if(!group.members.includes(userId))group.members.push(userId);
+saveGroups(groups);
+renderOwnerPanel(group);
+}
+
+function rejectRequest(groupId,userId){
+const groups=getGroups();
+const group=groups.find(g=>g.id===groupId);
+if(!group)return;
+group.pending=group.pending.filter(id=>id!==userId);
+saveGroups(groups);
+renderOwnerPanel(group);
+}
+
+function renderGroupsList(){
+const container=document.getElementById("groupsList");
+container.innerHTML="";
+const myId=getMyId();
+const groups=getGroups().filter(g=>g.age===selectedAge);
+
+if(!groups.length){
+container.innerHTML='<div class="thread">Todavía no hay grupos creados para '+escapeHTML(selectedAge)+'. Sé el primero en crear uno.</div>';
+return;
+}
+
+groups.forEach(group=>{
+const isOwner=group.ownerId===myId;
+const isMember=group.members.includes(myId);
+const isPending=group.pending.includes(myId);
+
+const card=document.createElement("div");
+card.className="group";
+
+const headerDiv=document.createElement("div");
+headerDiv.className="group-card-header";
+headerDiv.innerHTML=groupAvatarHTML(group,44);
+
+const nameEl=document.createElement("div");
+nameEl.className="group-name";
+nameEl.textContent=group.name;
+headerDiv.appendChild(nameEl);
+
+const membersEl=document.createElement("div");
+membersEl.className="group-members";
+membersEl.textContent=group.members.length+" miembro(s) · "+group.age;
+
+const statusEl=document.createElement("div");
+statusEl.className="group-status";
+
+if(isOwner){
+const tag=document.createElement("span");
+tag.className="group-tag owner-tag";
+tag.textContent="Tu grupo";
+statusEl.appendChild(tag);
+}else if(isMember){
+const tag=document.createElement("span");
+tag.className="group-tag member-tag";
+tag.textContent="Miembro";
+statusEl.appendChild(tag);
+}else if(isPending){
+const tag=document.createElement("span");
+tag.className="group-tag pending-tag";
+tag.textContent="Solicitud enviada";
+statusEl.appendChild(tag);
+}else{
+const btn=document.createElement("button");
+btn.className="join-btn";
+btn.textContent="Solicitar unirse";
+btn.addEventListener("click",()=>requestJoin(group.id));
+statusEl.appendChild(btn);
+}
+
+card.appendChild(headerDiv);
+card.appendChild(membersEl);
+card.appendChild(statusEl);
+
+if(isOwner||isMember){
+card.setAttribute("data-clickable","true");
+card.addEventListener("click",()=>openGroup(group.id));
+}
+
+container.appendChild(card);
+});
+}
+
+function openGroup(groupId){
+const groups=getGroups();
+const group=groups.find(g=>g.id===groupId);
+if(!group){alert("No se encontró el grupo.");return;}
+const myId=getMyId();
+group.members=Array.isArray(group.members)?group.members:[];
+group.pending=Array.isArray(group.pending)?group.pending:[];
+
+if(!group.members.includes(myId)&&group.ownerId!==myId){
+alert("Debes esperar a que el creador del grupo acepte tu solicitud.");
+return;
+}
+
+currentGroup=group.id;
+document.getElementById("home").style.display="none";
+document.getElementById("forum").style.display="none";
+document.getElementById("groups").style.display="none";
+document.getElementById("adminPanel").style.display="none";
+document.getElementById("groupView").style.display="block";
+document.getElementById("groupTitle").textContent=group.name;
+document.getElementById("groupAge").textContent=group.age||selectedAge;
+document.getElementById("groupAvatarContainer").innerHTML=groupAvatarHTML(group,60);
+renderOwnerPanel(group);
+loadGroupPosts();
+window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function renderOwnerPanel(group){
+const panel=document.getElementById("ownerPanel");
+const myId=getMyId();
+
+if(group.ownerId!==myId){
+panel.style.display="none";
+panel.innerHTML="";
+return;
+}
+
+panel.style.display="block";
+
+if(!group.pending.length){
+panel.innerHTML='<div class="owner-panel-title">Solicitudes pendientes</div><div class="no-pending">No hay solicitudes pendientes.</div>';
+return;
+}
+
+panel.innerHTML='<div class="owner-panel-title">Solicitudes pendientes ('+group.pending.length+')</div>';
+
+group.pending.forEach(userId=>{
+const row=document.createElement("div");
+row.className="pending-row";
+
+const label=document.createElement("span");
+label.textContent="Anónimo ("+userId.slice(0,10)+")";
+
+const acceptBtn=document.createElement("button");
+acceptBtn.className="accept-btn";
+acceptBtn.textContent="Aceptar";
+acceptBtn.addEventListener("click",()=>acceptRequest(group.id,userId));
+
+const rejectBtn=document.createElement("button");
+rejectBtn.className="reject-btn";
+rejectBtn.textContent="Rechazar";
+rejectBtn.addEventListener("click",()=>rejectRequest(group.id,userId));
+
+row.appendChild(label);
+row.appendChild(acceptBtn);
+row.appendChild(rejectBtn);
+panel.appendChild(row);
+});
+}
+
+function getGroupPosts(){
+return JSON.parse(localStorage.getItem("lolchat3l_group_posts")||"[]");
+}
+
+async function createGroupPost(){
+if(isBanned(getMyId())){
+alert("Has sido baneado y no puedes publicar.");
+return;
+}
+
+const groups=getGroups();
+const group=groups.find(g=>g.id===currentGroup);
+const myId=getMyId();
+if(!group||(!group.members.includes(myId)&&group.ownerId!==myId)){
+alert("No perteneces a este grupo todavía.");
+return;
+}
+
+const text=document.getElementById("groupPostText").value.trim();
+const file=document.getElementById("groupMediaFile").files[0];
+
+if(!text&&!file){
+alert("Escribe algo o selecciona una imagen/video.");
+return;
+}
+
+if(file&&file.size>20*1024*1024){
+alert("El archivo es demasiado grande. Usa archivos de hasta 20 MB.");
+return;
+}
+
+let media=null;
+if(file){
+media={
+type:file.type.startsWith("image/")?"image":"video",
+mime:file.type,
+name:file.name,
+data:await fileToDataURL(file)
+};
+}
+
+const posts=getGroupPosts();
+posts.unshift({
+id:"p-"+Date.now().toString(36)+Math.random().toString(36).slice(2,8),
+group:currentGroup,
+age:selectedAge,
+authorId:getMyId(),
+authorName:getMyDisplayName(),
+text:text,
+media:media,
+date:new Date().toLocaleString()
+});
+localStorage.setItem("lolchat3l_group_posts",JSON.stringify(posts));
+
+document.getElementById("groupPostText").value="";
+document.getElementById("groupMediaFile").value="";
+document.getElementById("groupFileName").textContent="Ningún archivo seleccionado";
+document.getElementById("groupMediaPreview").innerHTML="";
+document.getElementById("groupMediaPreview").style.display="none";
+
+loadGroupPosts();
+}
+
+function loadGroupPosts(){
+const container=document.getElementById("groupThreads");
+container.innerHTML="";
+const myId=getMyId();
+const amAdmin=isAdmin(myId);
+const posts=getGroupPosts().filter(post=>post.group===currentGroup&&post.age===selectedAge);
+
+if(!posts.length){
+container.innerHTML='<div class="thread">Todavía no hay publicaciones en este grupo.</div>';
+return;
+}
+
+posts.forEach(post=>{
+const thread=document.createElement("div");
+thread.className="thread";
+let mediaHTML="";
+if(post.media){
+if(post.media.type==="image"){
+mediaHTML='<img class="media-image" src="'+post.media.data+'" alt="'+escapeHTML(post.media.name||"Imagen")+'">';
+}else{
+mediaHTML='<video class="media-video" controls src="'+post.media.data+'"></video>';
+}
+}
+
+const authorName=post.authorName||anonTag(post.authorId);
+const safeId=post.id||"";
+
+thread.innerHTML=
+'<div class="thread-header"><span class="author-name">'+escapeHTML(authorName)+(post.authorId===myId?' (tú)':'')+'</span> — '+escapeHTML(post.date)+' — '+escapeHTML(post.age)+'</div>'+
+'<div class="thread-message" id="groupPostText-'+escapeHTML(safeId)+'">'+(post.text?escapeHTML(post.text):'')+'</div>'+
+mediaHTML+
+(amAdmin&&safeId?'<div class="msg-admin-actions"><button class="edit-msg-btn" onclick="startEditGroupPost(\''+safeId+'\')">Editar</button><button class="delete-msg-btn" onclick="deleteGroupPost(\''+safeId+'\')">Eliminar</button></div><div class="edit-msg-form" id="editGroupPostForm-'+escapeHTML(safeId)+'" style="display:none"></div>':'');
+
+container.appendChild(thread);
+});
+}
+
+function startEditGroupPost(postId){
+if(!isAdmin(getMyId()))return;
+const form=document.getElementById("editGroupPostForm-"+postId);
+const posts=getGroupPosts();
+const post=posts.find(p=>p.id===postId);
+if(!post)return;
+form.innerHTML='<textarea id="editGroupPostText-'+postId+'"></textarea><div class="form-actions"><button onclick="saveEditGroupPost(\''+postId+'\')">Guardar</button><button onclick="document.getElementById(\'editGroupPostForm-'+postId+'\').style.display=\'none\'">Cancelar</button></div>';
+document.getElementById("editGroupPostText-"+postId).value=post.text||"";
+form.style.display="block";
+}
+
+function saveEditGroupPost(postId){
+if(!isAdmin(getMyId()))return;
+const newText=document.getElementById("editGroupPostText-"+postId).value;
+const posts=getGroupPosts();
+const post=posts.find(p=>p.id===postId);
+if(!post)return;
+post.text=newText;
+post.editedByAdmin=true;
+localStorage.setItem("lolchat3l_group_posts",JSON.stringify(posts));
+loadGroupPosts();
+}
+
+function deleteGroupPost(postId){
+if(!isAdmin(getMyId()))return;
+if(!confirm("¿Eliminar esta publicación?"))return;
+const posts=getGroupPosts().filter(p=>p.id!==postId);
+localStorage.setItem("lolchat3l_group_posts",JSON.stringify(posts));
+loadGroupPosts();
+}
+
+function previewGroupMedia(){
+const file=document.getElementById("groupMediaFile").files[0];
+const preview=document.getElementById("groupMediaPreview");
+document.getElementById("groupFileName").textContent=file?file.name:"Ningún archivo seleccionado";
+preview.innerHTML="";
+if(!file){preview.style.display="none";return;}
+
+const url=URL.createObjectURL(file);
+if(file.type.startsWith("image/")){
+const img=document.createElement("img");
+img.src=url;
+preview.appendChild(img);
+}else if(file.type.startsWith("video/")){
+const video=document.createElement("video");
+video.src=url;
+video.controls=true;
+preview.appendChild(video);
+}
+preview.style.display="block";
+}
+
+function escapeHTML(text){
+const div=document.createElement("div");
+div.textContent=String(text);
+return div.innerHTML;
+}
+</script>
+</body>
+</html>
+lolchat3l_sin_backend_corregido.html
+HTML
+hoy 19:12
+solo abro mi proyecto y hago otra fila para poner un codigo donde yo solo sea admin y con el panel que te describi:quiero que el panel 
